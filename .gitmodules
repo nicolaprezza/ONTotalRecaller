@@ -1,0 +1,3 @@
+[submodule "extern/fast5"]
+	path = extern/fast5
+	url = https://github.com/mateidavid/fast5
