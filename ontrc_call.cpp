@@ -222,19 +222,19 @@ int main(int argc, char** argv){
 
 	auto calls = trc.call(ns_t,W,verbose);
 
-	cout << "done. Found a match of length " << calls[0].size() << " on the reference. " << endl;
+	cout << "done. Found a match of length " << calls[0].first.size() << " on the reference. " << endl;
 
 	ofstream ofs(fasta_file);
 
 	cout << "Saving sequences ..."<<flush;
 
-	if(calls[0].size()>0){
-		ofs << ">ontrc_reference_match_with_snps\n";
-		ofs << calls[0] << "\n";
+	if(calls[0].first.size()>0){
+		ofs << ">ontrc_reference_match:" << calls[0].second.start << ":" << calls[0].second.length << ":" << calls[0].second.s << "\n";
+		ofs << calls[0].first << "\n";
 	}
 
 	ofs << ">ontrc_reference_unbiased\n";
-	ofs << calls[1] << "\n";
+	ofs << calls[1].first << "\n";
 
 	cout << " done." << endl;
 

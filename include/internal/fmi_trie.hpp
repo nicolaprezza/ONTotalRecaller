@@ -74,7 +74,7 @@ public:
 	static const ulint default_node_start_id = 0;
 
 	//type of a substring coordinate in the corpus. In this case is simply a pair <begin, length>
-	//more complex structures (e.g. a labeled graph) could be a more complex type
+	//in more complex structures (e.g. a labeled graph) could be a more complex type
 	typedef pair<ulint,ulint> coordinate;
 
 	/*

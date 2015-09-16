@@ -47,6 +47,38 @@ typedef unsigned char uchar;
 typedef csa_wt<wt_huff<bit_vector>, 512, 1024> fm_index_t;
 
 enum strand {TEMPLATE, COMPLEMENT};
+enum base {	A,C,G,T, base_end };
+
+/*
+ * this type defines an alignment region. Coordinates are 0-based and
+ * start from 5' on template, on 3' on complement strand (so that each dinucleotide pair
+ * is associated with a single position).
+ */
+struct alignment{
+
+	ulint start;
+	ulint length;
+	strand s;
+
+};
+
+/*
+ * assume that the reference is stored as R$C, where R is the reference (fw) strand,
+ * $ is a separator, and C is the reverse complement of R.
+ *
+ * input: a region <start, length> in the string R$C, plus the length glob_len=|R$C|
+ * output: <start, length, strand> alignment, i.e. if original position is
+ * on complementary strand then re-map position on forward.
+ */
+static alignment global_to_local(pair<ulint,ulint> glob, ulint glob_len){
+
+	ulint n = (glob_len-1)/2;// n = |R|
+
+	if(glob.first<n) return {glob.first, glob.second, TEMPLATE};
+
+	return {(glob_len-1)-glob.first, glob.second, COMPLEMENT};
+
+}
 
 double neg_inf = -std::numeric_limits<double>::infinity();
 double inf = std::numeric_limits<double>::infinity();
@@ -58,8 +90,6 @@ static constexpr double log_sigma = log(4.0);	//log of alphabet cardinality
 static constexpr double log_1_2pi = -log(2*3.141592653589793); // log(1/(2pi))
 
 bool is_defined(double x){return x!=UNDEFINED;}
-
-enum base {	A,C,G,T, base_end };
 
 double max(double x, double y, double z){
 
@@ -116,6 +146,7 @@ base char_to_base(uchar c){
 
 }
 
+
 uchar base_to_char(base b){
 
 	if(b==A) return 'A';
@@ -127,7 +158,7 @@ uchar base_to_char(base b){
 
 
 
-string reverse_complement(string seq){
+string reverse_complement(string &seq){
 
 	string rc;
 
@@ -138,7 +169,7 @@ string reverse_complement(string seq){
 
 }
 
-string reverse(string seq){
+string reverse(string &seq){
 
 	string r;
 
@@ -149,7 +180,7 @@ string reverse(string seq){
 
 }
 
-bool contains_separator(string s){
+bool contains_separator(string &s){
 
 	for(auto c:s)
 		if(c=='$')

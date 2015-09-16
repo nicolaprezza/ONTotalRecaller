@@ -225,7 +225,7 @@ public:
 	 * returns a vector of 2  strings: the match on reference and the called bases (reference unbiased)
 	 *
 	 */
-	vector<string> call(signal_t& s, double W, bool verbose = false, bool free_mem = true){
+	vector<pair<string, alignment>> call(signal_t& s, double W, bool verbose = false, bool free_mem = true){
 
 		this->W = W;
 		this->verbose=verbose;
@@ -345,10 +345,20 @@ public:
 
 		}*/
 
-		vector<string> calls;
+		vector<pair<string, alignment>> calls;
 
-		calls.push_back(path(best_node_reference));
-		calls.push_back(path(best_node_caller));
+		auto occ = corpus->occ(best_node_reference->node_corpus);
+
+		alignment ali;
+		if(occ.size()>0){
+
+			auto coord = occ[0];
+			ali = global_to_local(coord,corpus->corpus_size());
+
+		}
+
+		calls.push_back({path(best_node_reference),ali});
+		calls.push_back({path(best_node_caller),{}});
 
 		if(free_mem) free_memory();
 
@@ -449,7 +459,7 @@ private:
 
 			//finally, apply the best mutation
 
-			//get (2k-2)-th ancestor, or the root if this node's heigth is < 2k-2
+			//get (2k-2)-th ancestor, or the root if this node's height is < 2k-2
 			node_ptr ancestor_2k = get_ancestor(x,2*k-2);
 
 			//get (k-1)-th ancestor
