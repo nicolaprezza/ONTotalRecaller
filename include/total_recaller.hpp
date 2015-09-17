@@ -347,7 +347,10 @@ public:
 
 		vector<pair<string, alignment>> calls;
 
-		auto occ = corpus->occ(best_node_reference->node_corpus);
+		vector<typename corpus_index::coordinate> occ;
+
+		if(candidates_w1.size()>0)
+			occ = corpus->occ(best_node_reference->node_corpus);
 
 		alignment ali;
 		if(occ.size()>0){
