@@ -45,6 +45,12 @@ using namespace std;
 
 namespace ontrc{
 
+double combine_scores(double a, double b){
+
+	return a+b;
+
+}
+
 /*
  * input:
  * 	- an alignment and its corresponding DNA sequence
@@ -91,7 +97,7 @@ static pair<string, alignment> call_snps(pair<string, alignment> input, set<ulin
 		vector<double> scores_fwd(4,0);
 		vector<double> scores_rev(4,0);
 
-		for(base b = A; b != base_end; ++b){
+		for(base b = A; b != base_end; b=(base)(b+1)){
 
 			forward_call[i] = base_to_char(b);
 			rev_call[length - i - 1] = base_to_char(complement(b));
@@ -105,7 +111,7 @@ static pair<string, alignment> call_snps(pair<string, alignment> input, set<ulin
 		base best_snp = A;
 		double max_score = combine_scores(scores_fwd[A],scores_rev[A]);
 
-		for(base b = C;b != base_end;++b){
+		for(base b = C;b != base_end;b=(base)(b+1)){
 
 			double best_score = combine_scores(scores_fwd[best_snp],scores_rev[best_snp]);
 			double this_score = combine_scores(scores_fwd[b],scores_rev[b]);
@@ -126,11 +132,7 @@ static pair<string, alignment> call_snps(pair<string, alignment> input, set<ulin
 
 }
 
-double combine_scores(double a, double b){
 
-	return a+b;
-
-}
 
 }
 

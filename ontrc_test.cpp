@@ -32,6 +32,8 @@
 #include <on_hmm.hpp>
 #include <total_recaller.hpp>
 
+#include <total_recaller_snps.hpp>
+
 using namespace ontrc;
 
 void help(){
@@ -99,7 +101,9 @@ void parse_parameters(char** argv, int argc, int &idx){
 
 }
 
-void mutate(string & s){
+set<ulint> mutate(string & s){
+
+	set<ulint> res;
 
 	srand(time(NULL));
 
@@ -110,12 +114,15 @@ void mutate(string & s){
 			cout << "mutation in pos " << i << " from " << s[i] << " to " << flush;
 
 			s[i] = base_to_char(base((char_to_base((uchar)s[i]) + ((rand()%3) + 1))%4));
+			res.insert(i);
 
 			cout << s[i] << endl;
 
 		}
 
 	}
+
+	return res;
 
 }
 
@@ -135,7 +142,7 @@ int main(int argc, char** argv){
 
 	//mutate fwd strand
 
-	mutate(forward_strand);
+	auto pos = mutate(forward_strand);
 
 	//build reference text: forward strand concatenated to its reverse complement, plus a separator in the middle
 	string reference = forward_strand + '$' + ontrc::reverse_complement(forward_strand);
@@ -186,7 +193,7 @@ int main(int argc, char** argv){
 		//complement
 		vector<ontrc::event> subsample2;
 		for(ulint i=0;i<prefix_comp;++i)
-			subsample2.push_back( ns_c.get_event(i) );
+			subsample2.push_back( ns_c.get_event(ns_c.size()-prefix_comp + i) );
 		ns_c.replace_events(subsample2);
 
 		//align signal on reference
@@ -198,13 +205,12 @@ int main(int argc, char** argv){
 
 			strand str = calls[0].second.s;
 
-
-
-
-
-
 			on_hmm hmm_t(&ns_t,200,param);
 			on_hmm hmm_c(&ns_c,200,param);
+
+			auto with_snps = ontrc::call_snps(calls[0], pos, hmm_t,hmm_c);
+
+
 
 		}
 
