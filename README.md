@@ -22,7 +22,7 @@ ONTotalRecaller requires the libraries sdsl and hdf5 to be installed in your sys
 
 ### HDF5
 
-Note: we suggest to download HDF5 version 1.8 (at the moment, version 1.9 creates problems in the parsing of FAST5 files). Download ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf5/snapshots/v18/hdf5-1.8.16-snap3.tar.bz2, unpack it, enter the directory hdf5-1.8.16-snap3 and execute:
+Note: we suggest to download HDF5 version 1.8 (at the moment, version 1.9 creates problems in the parsing of FAST5 files). Download one of the .tar.bz2 files at ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf5/snapshots/v18/ , unpack it, enter the unpacked directory and execute:
 
 > ./configure --prefix=/usr/local/hdf5
 
