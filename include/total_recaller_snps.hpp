@@ -64,7 +64,7 @@ double combine_scores(double a, double b){
 template<
 	class scoring_strategy = on_hmm		//default: oxford nanopore scoring scheme (HMM)
 >
-static pair<string, alignment> call_snps(pair<string, alignment> input, set<ulint> snp_positions, scoring_strategy &fwd_hmm, scoring_strategy &rev_hmm){
+static pair<string, alignment> call_snps(pair<string, alignment>& input, set<ulint>& snp_positions, scoring_strategy &fwd_hmm, scoring_strategy &rev_hmm){
 
 	string forward_call;
 	string rev_call;
@@ -125,10 +125,11 @@ static pair<string, alignment> call_snps(pair<string, alignment> input, set<ulin
 
 	}
 
-	if(s==TEMPLATE)
-		return {forward_call, input.second};
+	//TODO returns always template strand
+	//if(s==TEMPLATE)
+	return {forward_call, input.second};
 
-	return {rev_call, input.second};
+	//return {rev_call, input.second};
 
 }
 

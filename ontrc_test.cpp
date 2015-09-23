@@ -160,6 +160,9 @@ int main(int argc, char** argv){
 
 	on_total_recaller trc(&fmi,param);
 
+	ulint total_calls=0;
+	ulint correct_calls=0;
+
 	for(auto f5 : fast5_files){
 
 		cout << "processing " << f5 << " ..." << endl;
@@ -196,7 +199,7 @@ int main(int argc, char** argv){
 			subsample2.push_back( ns_c.get_event(ns_c.size()-prefix_comp + i) );
 		ns_c.replace_events(subsample2);
 
-		//align signal on reference
+		//align forward signal on reference
 
 		auto calls = trc.call(ns_t,1, true,true);
 
@@ -208,14 +211,38 @@ int main(int argc, char** argv){
 			on_hmm hmm_t(&ns_t,200,param);
 			on_hmm hmm_c(&ns_c,200,param);
 
-			auto with_snps = ontrc::call_snps(calls[0], pos, hmm_t,hmm_c);
+			//this function tries substitutions at variable sites and returns the modified
+			//sequence on + strand (also if input was on - strand)
+			pair<string, alignment> called_seq_with_snps = ontrc::call_snps(calls[0], pos, hmm_t,hmm_c);
 
+			ulint start = called_seq_with_snps.second.start;
+			ulint length = called_seq_with_snps.second.length;
+			ulint end = called_seq_with_snps.second.start + length -1;
+			string called_sequence = called_seq_with_snps.first;
 
+			//extract SNPS that intersect the alignment position
+			for(	set<ulint>::iterator it = pos.lower_bound(start);
+					it != pos.end() and *it <= end;
+					++it	){
+
+				ulint i_ref = *it; //position of SNP on reference
+				ulint i_read = i_ref - start;//position of SNP on read
+
+				total_calls++;
+
+				//compare called SNP with original base on reference (before artificial mutation)
+				if(original_reference[i_ref] == called_sequence[i_read]) correct_calls++;
+
+			}
 
 		}
 
-
 	}
+
+	cout << "Done." << endl;
+	cout << "Total calls = " << total_calls << endl;
+	cout << "Correct calls = " << correct_calls << endl;
+	cout << "% correct calls = " << ( double(100*correct_calls)/total_calls ) << endl;
 
 
 }
